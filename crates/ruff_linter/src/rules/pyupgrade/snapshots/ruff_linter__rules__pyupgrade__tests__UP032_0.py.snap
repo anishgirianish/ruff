@@ -922,6 +922,46 @@ help: Convert to f-string
 138 |
 
 UP032 [*] Use f-string instead of `format` call
+   --> UP032_0.py:153:1
+    |
+151 | "{}{}".format(a)
+152 |
+153 | "" "{}".format(a["\\"])
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+154 |
+155 | "{}".format(a["b"])
+    |
+help: Convert to f-string
+150 |
+151 | "{}{}".format(a)
+152 |
+    - "" "{}".format(a["\\"])
+153 + f"{a["\\"]}"
+154 |
+155 | "{}".format(a["b"])
+156 |
+
+UP032 [*] Use f-string instead of `format` call
+   --> UP032_0.py:155:1
+    |
+153 | "" "{}".format(a["\\"])
+154 |
+155 | "{}".format(a["b"])
+    | ^^^^^^^^^^^^^^^^^^^
+156 |
+157 | r'"\N{snowman} {}".format(a)'
+    |
+help: Convert to f-string
+152 |
+153 | "" "{}".format(a["\\"])
+154 |
+    - "{}".format(a["b"])
+155 + f"{a["b"]}"
+156 |
+157 | r'"\N{snowman} {}".format(a)'
+158 |
+
+UP032 [*] Use f-string instead of `format` call
    --> UP032_0.py:159:1
     |
 157 |   r'"\N{snowman} {}".format(a)'
@@ -1011,6 +1051,72 @@ help: Convert to f-string
 175 |
 176 | "{}".format(
 177 |     [
+
+UP032 [*] Use f-string instead of `format` call
+   --> UP032_0.py:178:1
+    |
+176 |   )
+177 |
+178 | / "{}".format(
+179 | |     [
+180 | |         1,
+181 | |         2,
+182 | |         3,
+183 | |     ]
+184 | | )
+    | |_^
+185 |
+186 |   "{a}".format(
+    |
+help: Convert to f-string
+175 |     111111
+176 | )
+177 |
+    - "{}".format(
+    -     [
+178 + f"{[
+179 |         1,
+180 |         2,
+181 |         3,
+    -     ]
+    - )
+182 +     ]}"
+183 |
+184 | "{a}".format(
+185 |     a=[
+
+UP032 [*] Use f-string instead of `format` call
+   --> UP032_0.py:186:1
+    |
+184 |   )
+185 |
+186 | / "{a}".format(
+187 | |     a=[
+188 | |         1,
+189 | |         2,
+190 | |         3,
+191 | |     ]
+192 | | )
+    | |_^
+193 |
+194 |   (
+    |
+help: Convert to f-string
+183 |     ]
+184 | )
+185 |
+    - "{a}".format(
+    -     a=[
+186 + f"{[
+187 |         1,
+188 |         2,
+189 |         3,
+    -     ]
+    - )
+190 +     ]}"
+191 |
+192 | (
+193 |     "{a}"
 
 UP032 Use f-string instead of `format` call
    --> UP032_0.py:201:1
