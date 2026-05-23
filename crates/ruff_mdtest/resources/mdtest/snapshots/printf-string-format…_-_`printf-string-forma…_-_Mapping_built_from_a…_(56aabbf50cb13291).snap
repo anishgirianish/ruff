@@ -1,0 +1,33 @@
+---
+source: crates/mdtest/src/lib.rs
+expression: snapshot
+---
+
+---
+mdtest name: printf-string-formatting.md - `printf-string-formatting` (`UP031`) - Mapping built from a call
+mdtest path: crates/ruff_linter/../ruff_linter/resources/mdtest/pyupgrade/printf-string-formatting.md
+---
+
+# Python source files
+
+## mdtest_snippet.py
+
+```
+1 | "%(foo)s" % vars(obj)  # error: [printf-string-formatting]
+```
+
+# Diagnostics
+
+```
+error[UP031]: Use format specifiers instead of percent format
+ --> src/mdtest_snippet.py:1:1
+  |
+1 | "%(foo)s" % vars(obj)  # error: [printf-string-formatting]
+  | ^^^^^^^^^^^^^^^^^^^^^
+  |
+help: Replace with format specifiers
+  - "%(foo)s" % vars(obj)  # error: [printf-string-formatting]
+1 + "{foo}".format(**vars(obj))  # error: [printf-string-formatting]
+note: This is an unsafe fix and may change runtime behavior
+
+```

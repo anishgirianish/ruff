@@ -90,3 +90,112 @@ An unknown conversion specifier (`str.format` raises `ValueError`):
 "" "{}".format(x)  # error: [f-string]
 "a" "" "{}".format(x)  # error: [f-string]
 ```
+
+## Widening: arguments with a non-colliding quote
+
+Rule expansion for [#2031](https://github.com/astral-sh/ruff/issues/2031). Previously any argument
+containing a quote was skipped. When the argument's quote differs from the string's own quote, the
+interpolation is valid on every supported version, so the conversion is offered:
+
+<!-- snapshot-diagnostics -->
+
+```py
+'Magic wand: {}'.format(bag["wand"])  # error: [f-string]
+'{}'.format(len(l) * "─")  # error: [f-string]
+'Hello {}'.format("world")  # error: [f-string]
+```
+
+## Widening: `**locals()` / `**vars()` splats
+
+A `**locals()`, `**vars()`, or `**vars(<target>)` splat resolves keyword fields against the
+surrounding scope (or `<target>`'s attributes). The conversion is offered, but the fix is unsafe
+because those names are resolved syntactically, with no guarantee they are bound at runtime.
+
+<!-- snapshot-diagnostics -->
+
+`**locals()` and `**vars()` resolve fields to bare names:
+
+```py
+"reading {filename}".format(**locals())  # error: [f-string]
+"reading {filename}".format(**vars())  # error: [f-string]
+```
+
+A `**locals()` splat may be mixed with explicit keyword arguments:
+
+```py
+"{prefix}: {filename}".format(prefix='info', **locals())  # error: [f-string]
+```
+
+`**vars(<target>)` resolves fields to `<target>.<name>`:
+
+```py
+"{foo}:{bar}".format(**vars(x))  # error: [f-string]
+"{foo}".format(**vars(self.obj))  # error: [f-string]
+```
+
+## PEP 701: same-quote and multi-line interpolations
+
+When the argument reuses the string's own quote, or spans multiple lines, the interpolation is only
+valid under [PEP 701](https://peps.python.org/pep-0701/) (Python 3.12+).
+
+### Before Python 3.12
+
+The conversion is not offered, so no diagnostic is emitted:
+
+```toml
+target-version = "py311"
+lint.select = ["UP032"]
+```
+
+```py
+"Hello {}".format("world")
+"Magic wand: {}".format(bag["wand"])
+"{}".format(len(l) * "─")
+"{}".format(
+    [
+        1,
+        2,
+        3,
+    ]
+)
+"{a}".format(
+    a=[
+        1,
+        2,
+        3,
+    ]
+)
+```
+
+### Python 3.12 and later
+
+The same calls are now converted. The single-line cases show the resulting fix. For the multi-line
+cases the inline assertion sits inside the call, which suppresses the fix in this snapshot, but the
+diagnostic confirms the conversion is now offered:
+
+<!-- snapshot-diagnostics -->
+
+```toml
+target-version = "py312"
+lint.select = ["UP032"]
+```
+
+```py
+"Hello {}".format("world")  # error: [f-string]
+"Magic wand: {}".format(bag["wand"])  # error: [f-string]
+"{}".format(len(l) * "─")  # error: [f-string]
+"{}".format(  # error: [f-string]
+    [
+        1,
+        2,
+        3,
+    ]
+)
+"{a}".format(  # error: [f-string]
+    a=[
+        1,
+        2,
+        3,
+    ]
+)
+```

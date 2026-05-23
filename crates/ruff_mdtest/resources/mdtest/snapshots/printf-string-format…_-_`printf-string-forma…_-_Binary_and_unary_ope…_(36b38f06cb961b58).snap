@@ -1,0 +1,69 @@
+---
+source: crates/mdtest/src/lib.rs
+expression: snapshot
+---
+
+---
+mdtest name: printf-string-formatting.md - `printf-string-formatting` (`UP031`) - Binary and unary operations on the right-hand side
+mdtest path: crates/ruff_linter/../ruff_linter/resources/mdtest/pyupgrade/printf-string-formatting.md
+---
+
+# Python source files
+
+## mdtest_snippet.py
+
+```
+1 | "├─%s─" % (len(l) * "─")  # error: [printf-string-formatting]
+2 | "%s" % ("a" + "b")  # error: [printf-string-formatting]
+3 | "%s" % (-x)  # error: [printf-string-formatting]
+```
+
+# Diagnostics
+
+```
+error[UP031]: Use format specifiers instead of percent format
+ --> src/mdtest_snippet.py:1:1
+  |
+1 | "├─%s─" % (len(l) * "─")  # error: [printf-string-formatting]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+help: Replace with format specifiers
+  - "├─%s─" % (len(l) * "─")  # error: [printf-string-formatting]
+1 + "├─{}─".format(len(l) * "─")  # error: [printf-string-formatting]
+2 | "%s" % ("a" + "b")  # error: [printf-string-formatting]
+3 | "%s" % (-x)  # error: [printf-string-formatting]
+note: This is an unsafe fix and may change runtime behavior
+
+```
+
+```
+error[UP031]: Use format specifiers instead of percent format
+ --> src/mdtest_snippet.py:2:1
+  |
+2 | "%s" % ("a" + "b")  # error: [printf-string-formatting]
+  | ^^^^^^^^^^^^^^^^^^
+  |
+help: Replace with format specifiers
+1 | "├─%s─" % (len(l) * "─")  # error: [printf-string-formatting]
+  - "%s" % ("a" + "b")  # error: [printf-string-formatting]
+2 + "{}".format("a" + "b")  # error: [printf-string-formatting]
+3 | "%s" % (-x)  # error: [printf-string-formatting]
+note: This is an unsafe fix and may change runtime behavior
+
+```
+
+```
+error[UP031]: Use format specifiers instead of percent format
+ --> src/mdtest_snippet.py:3:1
+  |
+3 | "%s" % (-x)  # error: [printf-string-formatting]
+  | ^^^^^^^^^^^
+  |
+help: Replace with format specifiers
+1 | "├─%s─" % (len(l) * "─")  # error: [printf-string-formatting]
+2 | "%s" % ("a" + "b")  # error: [printf-string-formatting]
+  - "%s" % (-x)  # error: [printf-string-formatting]
+3 + "{}".format(-x)  # error: [printf-string-formatting]
+note: This is an unsafe fix and may change runtime behavior
+
+```
